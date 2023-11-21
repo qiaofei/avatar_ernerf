@@ -76,7 +76,6 @@ def generator(
         results_folder, model_config["infer_dir"])
     os.makedirs(save_dir, exist_ok=True)
 
-    # ==================== 下载音频文件 ====================
     if os.path.isfile(audio_path):
         temp_audio_path = audio_path
     else:
