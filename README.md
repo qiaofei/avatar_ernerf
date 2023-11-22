@@ -2,7 +2,7 @@
 
 ## ER-NeRF : [Paper](https://arxiv.org/abs/2307.09323) | [github](https://github.com/Fictionarry/ER-NeRF.git)
 
-## Language: [English] | [简体中文](README_CN.md)
+## Language: [English] | [[简体中文](README_CN.md)]
 
 ## 安装
 
