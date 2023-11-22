@@ -2,26 +2,33 @@
 
 ## ER-NeRF : [Paper](https://arxiv.org/abs/2307.09323) | [github](https://github.com/Fictionarry/ER-NeRF.git)
 
-## Language: [English] | [[简体中文](README_CN.md)]
+## Language: [English] | [简体中文](README_CN.md)
 
-## Overview
+## 安装
 
-- This is just a suturing monster project, a whole process scheme of avatar video generation based on ER-NeRF algorithm to provide additional pre-processing and post-processing. The author is not the author of ER-NeRF algorithm, and does not have the ability to answer any problem with poor processing effect.
+- reference: Ubuntu18.04; CUDA11.3; CUDNN>=8.2.4, <8.7.0; gcc/g++-9;
 
-## Installation
-
-- Ubuntu18.04; CUDA11.3; CUDNN>=8.2.4, <8.7.0; gcc/g++-9;
-
-- third party:
-
+    **linux packages:**
+    <br>
     ```shell
-    sudo apt-get install libasound2-dev portaudio19-dev # dependency for pyaudio
-    sudo apt-get install ffmpeg # or build from source
-    # build openface from source `https://github.com/TadasBaltrusaitis/OpenFace.git`
+    sudo apt-get install libasound2-dev portaudio19-dev
+    sudo apt-get install ffmpeg # or build it from source
     ```
+    <br>
 
-- python env:
+    **build openface:**
+    <br>
+    reference doc: `https://github.com/TadasBaltrusaitis/OpenFace.git`<br>
+    after build, you will get a `FeatureExtraction`, copy it to `/usr/local/bin`.
+    <br>
+    or you can modify `tasks/preprocess.py` function `run_face_feature_extraction` to your own `FeatureExtraction` path.
+    ```python
+    cmd = "<path_to_FeatureExtraction> -f {} -out_dir {}".format(input_path, temp_dir)
+    ```
+    <br>
 
+    **python environment:**
+    <br>
     ```shell
     conda create -n ernerf python=3.10 -y
     conda activate ernerf
@@ -32,17 +39,21 @@
     # install pytorch3d
     pip install "git+https://github.com/facebookresearch/pytorch3d.git"
 
-    # install others
+    # install other dependencies
     pip install -r requirements.txt
-
     sh install_ext.sh
     ```
 
 - pretrained weights:
 
-    Download the pretrained weights from: [Google Drive](https://drive.google.com/file/d/12kz5-UwWyKzTf7z2hFUO41Jx5wnTEbJy/view?usp=drive_link)
+    download from: [Google Drive](https://drive.google.com/file/d/12kz5-UwWyKzTf7z2hFUO41Jx5wnTEbJy/view?usp=drive_link)<br>
+    unzip to `<projet>/pretrained_weights`.
+    <br>
 
-    Download 3DMM model for head pose estimation:
+    the `3DMM` model is from: [Basel Face Model 2009](https://faces.dmi.unibas.ch/bfm/main.php?nav=1-1-0&id=details)
+    <br>
+    download and convert:
+
     ```shell
     wget https://github.com/YudongGuo/AD-NeRF/blob/master/data_util/face_tracking/3DMM/exp_info.npy?raw=true -O pretrained_weights/3DMM/exp_info.npy
     wget https://github.com/YudongGuo/AD-NeRF/blob/master/data_util/face_tracking/3DMM/keys_info.npy?raw=true -O pretrained_weights/3DMM/keys_info.npy
@@ -50,9 +61,9 @@
     wget https://github.com/YudongGuo/AD-NeRF/blob/master/data_util/face_tracking/3DMM/topology_info.npy?raw=true -O pretrained_weights/3DMM/topology_info.npy
     ``` 
 
-    Download 3DMM model from [Basel Face Model 2009](https://faces.dmi.unibas.ch/bfm/main.php?nav=1-1-0&id=details):
     ```shell
-    # 1. copy 01_MorphableModel.mat to `pretrained_weights/3DMM`
+    # 1. 
+    # copy 01_MorphableModel.mat to `<projet>pretrained_weights/3DMM`
     # 2.
     cd modules/face_tracking
     python convert_BFM.py
@@ -60,16 +71,74 @@
 
 ## Usage
 
-- The input video data should be a video of about 5-10 minutes, there is only one person in the video, and it needs to ensure time continuity (one shot to the end).
+- Input Data
+
+    the input video should be 5-10 minutes long, and only one person in the video.
+    <br>
+    example:
+    <br>
+    ![sample input video](./docs/sample_video.gif)
+
+- Training
 
     ```shell
     cd <PROJECT>
     export PYTHONPATH=./
 
-    python -u create_train_task.py -i <input_video> --model_uid <model_name>
+    python -u create_train_task.py -i <input_video_path> --model_uid <model_name>
 
+    # `input_video_path` means the path to the input video.
+    # `model_name` means the name of the model.
+    # `model_cfg_file` should be a json file path, if it's `None`, the model_config file will save to `<model_dataset_folder>/<model_name>/model_config.json`; if it's not `None`, the model_config file will save to `model_cfg_file`.
+    # `preproc_only` means only run data preprocessing, and skip training.
+    # `preproc_done` means whether the preprocessing has been done, if it's `True`, the preprocessing will be skipped.
+    # `preload` means whether do preload data.
+    # please refer to `create_train_task.py` for more details.
+    ```
+
+    - (1) Data Preprocessing
+
+    The input video will be used for face detection, pose estimation, background matting and other processes, as detailed in `tasks/preprocess.py`
+    <br>
+    And you will get a directory looklike this:
+    ```
+    <model_dataset_folder>
+    ├── <model_name>
+    |	├── input_temp.mp4
+    |	├── input.mp4
+    |	├── alpha.mp4
+    |	├── preview.png
+    |	├── face_data.mp4
+    |	├── head_bbox.json
+    |	├── audio.wav
+    |	├── audio_feat.npy
+    |	├── ori_imgs
+    |	├── parsing_label
+    |	├── parsing
+    |	├── bc.jpg
+    |	├── gt_imgs
+    |	├── torso_imgs
+    |	├── au.csv
+    |	├── track_params.pt
+    |	├── transforms_train.json
+    |	├── transforms_val.json
+    |	├── model_data.json
+
+    ```
+
+    - (2) ER-NeRF Training
+    
+    It is divided into three steps: head training, mouth fine-tuning and torso training, please refer to `trainer.py` for more details.
+
+- Inference
+
+    ```shell
     python -u create_infer_task.py -i <input_audio> -c <model_name or model_config_file>
     ```
+
+    - (1) Load ernerf weight and Inference
+    
+    - (2) Postprocess: Please refer to `tasks/postprocess.py` for more details.
 
 ## Acknowledgement
 

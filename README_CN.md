@@ -8,14 +8,16 @@
 
 - 参考环境: Ubuntu18.04; CUDA11.3; CUDNN>=8.2.4, <8.7.0; gcc/g++-9;
 
-    安装linux库:
+    **安装linux库:**
+    <br>
     ```shell
     sudo apt-get install libasound2-dev portaudio19-dev
     sudo apt-get install ffmpeg # 或源码编译ffmpeg
     ```
     <br>
 
-    源码编译openface:<br>
+    **源码编译openface:**
+    <br>
     参考文档: `https://github.com/TadasBaltrusaitis/OpenFace.git`<br>
     openface编译完成后将`FeatureExtraction`(这是一个可执行文件), 拷贝到`/usr/local/bin`下.
     <br>
@@ -23,12 +25,12 @@
     ```python
     cmd = "FeatureExtraction -f {} -out_dir {}".format(input_path, temp_dir)
     ```
-    这一行的`"FeatureExtraction"`修改为你的`FeatureExtraction`地址.
+    这一行中`"FeatureExtraction"`修改为你的`FeatureExtraction`地址.
+    <br>
     <br>
 
+    **安装python环境:**
     <br>
-    安装python环境:<br>
-
     ```shell
     # 创建conda虚拟环境
     conda create -n ernerf python=3.10 -y
@@ -121,7 +123,6 @@
     |	├── torso_imgs             # 躯干部分的图像
     |	├── au.csv                 # openface FeatureExtraction得到的action units结果
     |	├── track_params.pt        # face tracking训练得到的权重文件
-    |	├── track_params.pt        # face tracking训练得到的权重文件
     |	├── transforms_train.json  # 用于训练集的transform matrix
     |	├── transforms_val.json    # 用于验证集的transform matrix
     |	├── model_data.json        # 储存有该模特详细信息的配置文件
@@ -170,4 +171,5 @@
 ## 其他
 
 - 一个微信的技术分享群, 欢迎分享和交流
+<br>
 ![wechat](./docs/wechat_group.jpg)
