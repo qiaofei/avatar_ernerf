@@ -151,14 +151,15 @@
 - Face Parsing From: [face-parsing.PyTorch](https://github.com/zllrunning/face-parsing.PyTorch.git)
 
 - Face Tracking From: [AD-NeRF](https://github.com/YudongGuo/AD-NeRF.git)
-## 需要额外安装的库
-apt-get install gstreamer1.0*
-apt install ubuntu-restricted-extras
-apt install libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev
-apt install libgstreamer1.0-dev gstreamer1.0-plugins-base gstreamer1.0-plugins-good
 
 - Pose Estimation From: [yolov7-pose](https://github.com/trancongman276/yolov7-pose.git)
 
 - Background Matting From: [BackgroundMattingV2](https://github.com/PeterL1n/BackgroundMattingV2.git)
 
 - Talking Head From: [ER-NeRF](https://github.com/Fictionarry/ER-NeRF.git)
+
+## 需要额外安装的库
+- apt-get install gstreamer1.0*
+- apt install ubuntu-restricted-extras
+- apt install libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev
+- apt install libgstreamer1.0-dev gstreamer1.0-plugins-base gstreamer1.0-plugins-good
